@@ -28,10 +28,14 @@ namespace MtgoxWebsockets
                 "Training/0.t"
             }.Select(a => File.ReadAllLines(a));
 
-            StrategyTester t = new StrategyTester(data, new Func<TradeStrategy>[]
+            StrategyTester t = new StrategyTester(data, new Func<KeyValuePair<TradeStrategy, string>>[]
             {
                 //Add new type of strategy to this array as a factory method to construct the strategy
-                () => new Stupid()
+                () => new KeyValuePair<TradeStrategy, String>(new Stupid(1), "1"),
+                () => new KeyValuePair<TradeStrategy, String>(new Stupid(2), "2"),
+                () => new KeyValuePair<TradeStrategy, String>(new Stupid(4), "4"),
+                () => new KeyValuePair<TradeStrategy, String>(new Stupid(8), "8"),
+                () => new KeyValuePair<TradeStrategy, String>(new Stupid(16), "16"),
             });
 
             var result = t.Run(0, 10).ToArray();
@@ -40,7 +44,7 @@ namespace MtgoxWebsockets
 
             foreach (var item in result)
             {
-                Console.WriteLine(item.Value.Name + " with $" + item.Key);
+                Console.WriteLine(item.Item2.Name + "(" + item.Item3 + ") with $" + item.Item1);
             }
 
             Console.WriteLine("Press any key to exit");
@@ -84,7 +88,7 @@ namespace MtgoxWebsockets
                 fakeTrades;
                 //data.AsJson().AsMtgoxTrades();
 
-            TradeManager manager = new TradeManager(exchange, ticker, depth, trade, new Stupid());
+            TradeManager manager = new TradeManager(exchange, ticker, depth, trade, new Stupid(5));
 
             //var tradelog = new StreamWriter(File.Open("trades.t", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read));
             //manager.Trades.Subscribe(a => tradelog.WriteLine(String.Format("tr {0} {1}", a.Volume, a.Price)));
