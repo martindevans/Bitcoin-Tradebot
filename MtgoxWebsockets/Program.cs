@@ -17,15 +17,15 @@ namespace MtgoxWebsockets
     {
         static void Main(string[] args)
         {
-            //ListenToMtgox();
-            RunFakeTests();
+            ListenToMtgox();
+            //RunFakeTests();
         }
 
         public static Trade ParseTradeString(string line)
         {
             var tokens = line.Split(' ').Select(a => a.ToLower()).ToArray();
-            if (tokens[0] == "tr" && tokens.Length == 3)
-                return new Trade(decimal.Parse(tokens[1]), decimal.Parse(tokens[2]), DateTime.Now.ToUniversalTime().Ticks);
+            if (tokens[0] == "tr" && tokens.Length >= 3 && tokens.Length <= 4)
+                return new Trade(decimal.Parse(tokens[1]), decimal.Parse(tokens[2]), (tokens.Length >= 4 ? long.Parse(tokens[3]) : DateTime.Now.ToUniversalTime().Ticks));
 
             throw new ArgumentException("Invalid string");
         }
@@ -95,7 +95,7 @@ namespace MtgoxWebsockets
             TradeManager manager = new TradeManager(exchange, ticker, depth, trade, new Stupid(5));
 
             var tradelog = new StreamWriter(File.Open("trades.t", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read));
-            manager.Trades.Subscribe(a => tradelog.WriteLine(String.Format("tr {0} {1}", a.Volume, a.Price)));
+            manager.Trades.Subscribe(a => tradelog.WriteLine(String.Format("tr {0} {1} {2}", a.Volume, a.Price, a.Date)));
 
             manager.Trades.Subscribe(a => Console.WriteLine(String.Format("Mtgox Traded {0} BTC for {1} USD", a.Volume, a.Price)));
 
