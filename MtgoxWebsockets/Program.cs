@@ -17,8 +17,8 @@ namespace MtgoxWebsockets
     {
         static void Main(string[] args)
         {
-            ListenToMtgox();
-            //RunFakeTests();
+            //ListenToMtgox();
+            RunFakeTests();
         }
 
         public static Trade ParseTradeString(string line)
@@ -35,14 +35,14 @@ namespace MtgoxWebsockets
             StrategyTester t = new StrategyTester(new Func<KeyValuePair<TradeStrategy, string>>[]
             {
                 //Add new type of strategy to this array as a factory method to construct the strategy
-                () => new KeyValuePair<TradeStrategy, String>(new Stupid(1), "1"),
-                () => new KeyValuePair<TradeStrategy, String>(new Stupid(2), "2"),
                 () => new KeyValuePair<TradeStrategy, String>(new Stupid(3), "3"),
                 () => new KeyValuePair<TradeStrategy, String>(new Stupid(4), "4"),
                 () => new KeyValuePair<TradeStrategy, String>(new Stupid(5), "5"),
+                () => new KeyValuePair<TradeStrategy, String>(new Stupid(6), "6"),
+                () => new KeyValuePair<TradeStrategy, String>(new Stupid(7), "7"),
             });
 
-            var result = t.Run(File.ReadAllLines("Training/1.t").Select(a => ParseTradeString(a)), 0, 10).ToArray();
+            var result = t.Run(File.ReadAllLines("Training/0.t").Select(a => ParseTradeString(a)), 0, 10).ToArray();
 
             Console.Clear();
 
